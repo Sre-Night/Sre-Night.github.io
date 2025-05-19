@@ -1,0 +1,286 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>BurtSuite的应用 | Sre.Night's blog</title><meta name="author" content="Sre.Night"><meta name="copyright" content="Sre.Night"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="BurpSuite渗透测试bp的Proxy模块作用 拦截 突破IP限制，隐藏IP，加速访问  代理设置方法 操作系统级别代理，设置IP和端口 浏览器 插件Proxy Switch  详细板块 拦截Intercept  Forward：放行，放回浏览器 Drop：显示错误 Message actions：扫描，发送包到板块，修改内容，复制URL，做规则处理，拦截响应 Open browser：打开b">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BurtSuite的应用">
+<meta property="og:url" content="https://sre-night.github.io/2025/05/19/BurtSuite%E7%9A%84%E5%BA%94%E7%94%A8/index.html">
+<meta property="og:site_name" content="Sre.Night&#39;s blog">
+<meta property="og:description" content="BurpSuite渗透测试bp的Proxy模块作用 拦截 突破IP限制，隐藏IP，加速访问  代理设置方法 操作系统级别代理，设置IP和端口 浏览器 插件Proxy Switch  详细板块 拦截Intercept  Forward：放行，放回浏览器 Drop：显示错误 Message actions：扫描，发送包到板块，修改内容，复制URL，做规则处理，拦截响应 Open browser：打开b">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://sre-night.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2025-05-19T02:01:03.000Z">
+<meta property="article:modified_time" content="2025-05-19T05:02:46.835Z">
+<meta property="article:author" content="Sre.Night">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sre-night.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "BurtSuite的应用",
+  "url": "https://sre-night.github.io/2025/05/19/BurtSuite%E7%9A%84%E5%BA%94%E7%94%A8/",
+  "image": "https://sre-night.github.io/img/butterfly-icon.png",
+  "datePublished": "2025-05-19T02:01:03.000Z",
+  "dateModified": "2025-05-19T05:02:46.835Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Sre.Night",
+      "url": "https://sre-night.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://sre-night.github.io/2025/05/19/BurtSuite%E7%9A%84%E5%BA%94%E7%94%A8/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'BurtSuite的应用',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/default_top_img.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Sre.Night's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">BurtSuite的应用</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">BurtSuite的应用</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-19T02:01:03.000Z" title="发表于 2025-05-19 10:01:03">2025-05-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-19T05:02:46.835Z" title="更新于 2025-05-19 13:02:46">2025-05-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/">网络安全</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/web/">web</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>4分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="BurpSuite渗透测试"><a href="#BurpSuite渗透测试" class="headerlink" title="BurpSuite渗透测试"></a>BurpSuite渗透测试</h1><h2 id="bp的Proxy模块"><a href="#bp的Proxy模块" class="headerlink" title="bp的Proxy模块"></a>bp的Proxy模块</h2><h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><ul>
+<li>拦截</li>
+<li>突破IP限制，隐藏IP，加速访问</li>
+</ul>
+<h3 id="代理设置方法"><a href="#代理设置方法" class="headerlink" title="代理设置方法"></a>代理设置方法</h3><ul>
+<li>操作系统级别代理，设置IP和端口</li>
+<li>浏览器</li>
+<li>插件Proxy Switch</li>
+</ul>
+<h3 id="详细板块"><a href="#详细板块" class="headerlink" title="详细板块"></a>详细板块</h3><ul>
+<li><p>拦截Intercept</p>
+<ul>
+<li>Forward：放行，放回浏览器</li>
+<li>Drop：显示错误</li>
+<li>Message actions：扫描，发送包到板块，修改内容，复制URL，做规则处理，拦截响应</li>
+<li>Open browser：打开bp内置浏览器</li>
+</ul>
+</li>
+<li><p>History：历史处理</p>
+</li>
+<li><p>march and replace：对请求和响应做一些规则的替换</p>
+</li>
+<li><p>proxy setting：拦截规则，响应内容修改，TLS穿透（不经过bp）</p>
+</li>
+</ul>
+<h3 id="bp拦截HTTPS"><a href="#bp拦截HTTPS" class="headerlink" title="bp拦截HTTPS"></a>bp拦截HTTPS</h3><h4 id="HTTPS原理"><a href="#HTTPS原理" class="headerlink" title="HTTPS原理"></a>HTTPS原理</h4><ul>
+<li>（1）浏览器和服务器建立https链接，浏览器将加密规则发送给服务器。 </li>
+<li>（2）服务器从中选出一组加密算法与HASH算法，并将自己的身份信息以证书（地址，公钥）的形式发回给浏览器。</li>
+<li>（3）浏览器得到服务器证书之后，浏览器进行以下处理： <ul>
+<li>验证证书的合法性（颁发证书的机构是否合法，证书中包含的服务器地址是否与正在访问的地址一致等），如果证书受信任，则浏览器栏里面会显示一个小锁头，否则会给出证书不受信的提示。 </li>
+<li>如果证书受信任，或者是用户接受了不受信的证书，浏览器会生成一串随机数的密码，并用证书中提供的公钥加密。 </li>
+<li>使用约定好的HASH算法计算握手消息，并使用生成的随机数对消息进行加密，最后将之前生成的所有信息发送给服务器。</li>
+</ul>
+</li>
+<li>（4）服务器接收浏览器发来的数据之后要做以下的操作： a) 使用自己的私钥将信息解密取出密码，使用密码解密浏览器发来的握手消息，并验证HASH是否与浏览器发来的一致。 b) 使用密码加密一段握手消息，发送给浏览器。 </li>
+<li>（5）浏览器解密并计算握手消息的HASH，如果与服务端发来的HASH一致，此时握手过程结束，之后所有的通信数据将由之前浏览器生成的随机密码并利用对称加密算法进行加密。</li>
+</ul>
+<p><strong>服务器和浏览器各进行一次加解密</strong></p>
+<h4 id="bp拦截HTTPS原理"><a href="#bp拦截HTTPS原理" class="headerlink" title="bp拦截HTTPS原理"></a>bp拦截HTTPS原理</h4><p>bp当作中间人</p>
+<ul>
+<li><p>bp截取客户端发送给服务器的请求，然后伪装成客户端与服务器进行通信；</p>
+</li>
+<li><p>bp就获取了服务器的发送给客服端的公钥，然后在bp上生成公私钥，再把bp生成的公钥发送给客户端。</p>
+</li>
+<li><p>客户端发送的对称加密密钥，也是发送给bp的，客户端就与bp建立了https连接。而bp则代替了客户端与服务器建立了https连接。</p>
+</li>
+<li><p>完成这一流程之后，客户端发送给服务器的内容，在bp上解密得到明文，在bp上看到的内容就是明文。而向服务器发送请求的时候，bp会用服务器协商好的密钥进行加密然后传输内容。</p>
+</li>
+<li><p>同样服务器返回的内容也是，bp会先解密，然后得到明文，bp 会伪装成服务器，再用bp与客户端协商好的密钥进行加密然后传输内容。</p>
+</li>
+<li><p>通过这样的手段，便可以获取客户端和服务器之间通信的所有内容。 使用中间人攻击手段，必须要让客户端信任中间人的证书，如果客户端不信任，则这种攻击手段也无法发挥作用。</p>
+</li>
+</ul>
+<p><strong>bp拦截https，进行4次加解密</strong></p>
+<h2 id="bp的Target模块"><a href="#bp的Target模块" class="headerlink" title="bp的Target模块"></a>bp的Target模块</h2><h3 id="作用-1"><a href="#作用-1" class="headerlink" title="作用"></a>作用</h3><ul>
+<li>把握网站整体情况</li>
+<li>对一次工作的域进行分析</li>
+<li>分析网站存在的的攻击面</li>
+</ul>
+<h3 id="设置作用域"><a href="#设置作用域" class="headerlink" title="设置作用域"></a>设置作用域</h3><ul>
+<li><p>同一个域：协议，域名，端口，必须一致</p>
+</li>
+<li><p>Scope：添加作用域</p>
+</li>
+<li><p>使用场景：</p>
+<ul>
+<li>限定Sitemap和https记录</li>
+<li>限定Spider抓取哪些作用域的内容</li>
+<li>限定Scanner扫描内容</li>
+<li><strong>不会影响拦截功能</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="Sitemap"><a href="#Sitemap" class="headerlink" title="Sitemap"></a>Sitemap</h3><ul>
+<li><p>记录类型（关闭拦截）</p>
+<ul>
+<li>自动（爬行）：获取全面信息</li>
+<li>手动（浏览器访问）：仅仅根据自己需要</li>
+</ul>
+</li>
+<li><p>过滤器</p>
+</li>
+</ul>
+<h3 id="结果操作"><a href="#结果操作" class="headerlink" title="结果操作"></a>结果操作</h3><p>扫描，发送包，再次发起请求，</p>
+<p>交互功能：search，搜索comment，脚本，字段（告诉服务器当前请求是从哪个页面链接来的）</p>
+<h2 id="bp的scan模块"><a href="#bp的scan模块" class="headerlink" title="bp的scan模块"></a>bp的scan模块</h2><h3 id="主动扫描（crawl-and-audit）"><a href="#主动扫描（crawl-and-audit）" class="headerlink" title="主动扫描（crawl and audit）"></a>主动扫描（crawl and audit）</h3><ul>
+<li>方式：爬取所有链接，显示漏洞</li>
+<li>针对漏洞：<ul>
+<li>客户端：如XSS，HTTP头注入，操作重定向</li>
+<li>服务端：如SQL注入，命令行注入，文件遍历</li>
+</ul>
+</li>
+</ul>
+<h3 id="被动扫描-live-audit"><a href="#被动扫描-live-audit" class="headerlink" title="被动扫描  (live audit)"></a>被动扫描  (live audit)</h3><ul>
+<li>方式：只检测经过BP代理服务器的地址，不爬取</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/2025/05/19/BurtSuite%E7%9A%84%E5%BA%94%E7%94%A8/image-20250208113932507-1739072494281-5.png" alt="image-20250208113932507"></p>
+<h2 id="bp的repeater模块"><a href="#bp的repeater模块" class="headerlink" title="bp的repeater模块"></a>bp的repeater模块</h2><h3 id="作用-2"><a href="#作用-2" class="headerlink" title="作用"></a>作用</h3><ul>
+<li>发起http请求，分析响应</li>
+<li>重放请求</li>
+</ul>
+<h2 id="bp的intruder模块"><a href="#bp的intruder模块" class="headerlink" title="bp的intruder模块"></a>bp的intruder模块</h2><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>修改请求参数，分析响应内容，获得特征数据</p>
+<h3 id="实现密码暴力破解"><a href="#实现密码暴力破解" class="headerlink" title="实现密码暴力破解"></a>实现密码暴力破解</h3><ul>
+<li>设计攻击模式<ul>
+<li>sniper：使用一组payload和一个字段</li>
+<li>batter ram：同时在所有字段放置相同 payload</li>
+<li>pitchfork：设置多组payload，按出现顺序分配给多个字段</li>
+<li>Cluster bomb： 为每个位置分配一组 payload，对每组所有可能组合进行迭代</li>
+</ul>
+</li>
+<li>设计攻击字段</li>
+<li>设置payload</li>
+<li>设置线程值</li>
+</ul>
+<h3 id="获取CSFR-token"><a href="#获取CSFR-token" class="headerlink" title="获取CSFR token"></a>获取CSFR token</h3><p>token一次使用就销毁，因此要<strong>利用上一次响应结果的内容，作为本次请求的参数</strong>。</p>
+<p>使用pitchfork，两组payload，type：recursive grep、单线程</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/2025/05/19/BurtSuite%E7%9A%84%E5%BA%94%E7%94%A8/image-20250208173650096-1739072403970-2-1739072472938-2.png" alt="image-20250208173650096-1739072403970-2"></p>
+<h3 id="爆破验证码"><a href="#爆破验证码" class="headerlink" title="爆破验证码"></a>爆破验证码</h3><ul>
+<li>爆破</li>
+<li>修改响应为true</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://Sre-Night.github.io">Sre.Night</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://sre-night.github.io/2025/05/19/BurtSuite%E7%9A%84%E5%BA%94%E7%94%A8/">https://sre-night.github.io/2025/05/19/BurtSuite%E7%9A%84%E5%BA%94%E7%94%A8/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://Sre-Night.github.io" target="_blank">Sre.Night's blog</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/05/19/PHP%E5%9F%BA%E7%A1%80/" title="PHP基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">PHP基础</div></div><div class="info-2"><div class="info-item-1">基础语法一、PHP 代码基础 注释PHP 支持单行注释 // 和多行注释 /* ... */，以及用 # 开头的注释。注释内容会被解析器忽略。  输出内容使用 echo 关键字可将内容输出到页面。例如：  echo &quot;Hello, World!&quot;;  PHP 代码可嵌入 HTML 中，动态生成页面内容。  字符串拼接PHP 通过 . 操作符合并字符串，例如：  $message = &quot;Hello&quot;;$name = &quot;老李&quot;;echo $message . &quot; &quot; . $name; // 输出 &quot;Hello 老李&quot;  若需格式化输出，可用双引号包裹变量（如 &quot;$name&quot;），单引号则直接输出字面值。   二、语法特性 单双引号区别• 双引号解析变量（如 &quot;$name&quot;）和转义字符（如 &quot;\n&quot;）；• 单引号仅输出字面值，需用 \&#39; 转义单引号本身。  调试函数var_dump() 可输出变量的类型、长度及值，常用于调...</div></div></div></a><a class="pagination-related" href="/2025/05/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A6%82%E8%BF%B0/" title="机器学习概述"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">机器学习概述</div></div><div class="info-2"><div class="info-item-1">机器学习概述人工智能三大概念人工智能(AI): Artificial Intelligence 像人一样机器智能的综合与分析；机器模拟人类  释义：是一个系统，像人那样思考 像人那样理性思考    释义：是一个系统，像人那样活动 像人那样合理系统   机器学习(ML): Machine Learning 让机器自动学习，而不是基于规则的编程（不依赖特定规则编程）    从数据中获取规律；来了一个新的数据，产生一个新的预测  深度学习(DL): Deep Learning深度学习 : ，也叫深度神经网络，大脑仿生，设计一层一层的神经元模拟万事万物  三者之间的关系 机器学习是实现人工智能的一种途径 深度学习是机器学习的一种方法 学习方式基于规则的学习基于规则的预测 ： 程序员根据经验利用手工的if-else方式进行预测  但是有好多问题， 无法明确的写下规则，此时我们无法使用规则学习的方式来解决这一类问题，比如：  图像和语音识别 自然语言处理  基于模型的学习基于模型的学习就是通过编写机器学习算法，让机器自己学习从历史数据中获得经验、训练模型：  案例巩固 比如房价预测，数据如下...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Sre.Night</div><div class="author-info-description">谁怕？一蓑烟雨任平生。</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Sre-Night"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Sre-Night" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2895487980@qq.com" target="_blank" title="Email"><i class="fas fa-envelope-open-text"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的个人博客</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#BurpSuite%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95"><span class="toc-number">1.</span> <span class="toc-text">BurpSuite渗透测试</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#bp%E7%9A%84Proxy%E6%A8%A1%E5%9D%97"><span class="toc-number">1.1.</span> <span class="toc-text">bp的Proxy模块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8"><span class="toc-number">1.1.1.</span> <span class="toc-text">作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%90%86%E8%AE%BE%E7%BD%AE%E6%96%B9%E6%B3%95"><span class="toc-number">1.1.2.</span> <span class="toc-text">代理设置方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%A6%E7%BB%86%E6%9D%BF%E5%9D%97"><span class="toc-number">1.1.3.</span> <span class="toc-text">详细板块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bp%E6%8B%A6%E6%88%AAHTTPS"><span class="toc-number">1.1.4.</span> <span class="toc-text">bp拦截HTTPS</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HTTPS%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.4.1.</span> <span class="toc-text">HTTPS原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#bp%E6%8B%A6%E6%88%AAHTTPS%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.4.2.</span> <span class="toc-text">bp拦截HTTPS原理</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bp%E7%9A%84Target%E6%A8%A1%E5%9D%97"><span class="toc-number">1.2.</span> <span class="toc-text">bp的Target模块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8-1"><span class="toc-number">1.2.1.</span> <span class="toc-text">作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-number">1.2.2.</span> <span class="toc-text">设置作用域</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Sitemap"><span class="toc-number">1.2.3.</span> <span class="toc-text">Sitemap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C%E6%93%8D%E4%BD%9C"><span class="toc-number">1.2.4.</span> <span class="toc-text">结果操作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bp%E7%9A%84scan%E6%A8%A1%E5%9D%97"><span class="toc-number">1.3.</span> <span class="toc-text">bp的scan模块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E5%8A%A8%E6%89%AB%E6%8F%8F%EF%BC%88crawl-and-audit%EF%BC%89"><span class="toc-number">1.3.1.</span> <span class="toc-text">主动扫描（crawl and audit）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A2%AB%E5%8A%A8%E6%89%AB%E6%8F%8F-live-audit"><span class="toc-number">1.3.2.</span> <span class="toc-text">被动扫描  (live audit)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bp%E7%9A%84repeater%E6%A8%A1%E5%9D%97"><span class="toc-number">1.4.</span> <span class="toc-text">bp的repeater模块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8-2"><span class="toc-number">1.4.1.</span> <span class="toc-text">作用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bp%E7%9A%84intruder%E6%A8%A1%E5%9D%97"><span class="toc-number">1.5.</span> <span class="toc-text">bp的intruder模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">1.6.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E5%AF%86%E7%A0%81%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3"><span class="toc-number">1.6.1.</span> <span class="toc-text">实现密码暴力破解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96CSFR-token"><span class="toc-number">1.6.2.</span> <span class="toc-text">获取CSFR token</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%88%86%E7%A0%B4%E9%AA%8C%E8%AF%81%E7%A0%81"><span class="toc-number">1.6.3.</span> <span class="toc-text">爆破验证码</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/19/KNN%E7%AE%97%E6%B3%95/" title="KNN算法">KNN算法</a><time datetime="2025-05-19T11:25:32.000Z" title="发表于 2025-05-19 19:25:32">2025-05-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/19/SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/" title="SQL注入漏洞">SQL注入漏洞</a><time datetime="2025-05-19T05:08:10.000Z" title="发表于 2025-05-19 13:08:10">2025-05-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/19/PHP%E5%9F%BA%E7%A1%80/" title="PHP基础">PHP基础</a><time datetime="2025-05-19T02:10:08.000Z" title="发表于 2025-05-19 10:10:08">2025-05-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/19/BurtSuite%E7%9A%84%E5%BA%94%E7%94%A8/" title="BurtSuite的应用">BurtSuite的应用</a><time datetime="2025-05-19T02:01:03.000Z" title="发表于 2025-05-19 10:01:03">2025-05-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A6%82%E8%BF%B0/" title="机器学习概述">机器学习概述</a><time datetime="2025-05-17T06:52:13.000Z" title="发表于 2025-05-17 14:52:13">2025-05-17</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2025 By Sre.Night</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.0-b2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"></div><script defer src="/js/cursor.js"></script><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
