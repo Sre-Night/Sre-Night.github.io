@@ -1,0 +1,351 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>LINUX基础及DOCKER | Sre.Night's blog</title><meta name="author" content="Sre.Night"><meta name="copyright" content="Sre.Night"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F5F9FF"><meta name="description" content="LINUX基础及DOCKER一、Linux基础Linux是一个免费的、开源的类 UNIX 操作系统，在 1991 由林纳斯·托瓦兹在赫尔辛基大学上学时创立。Linux有上百种不同的发行版，如基于社区开发的debian、archlinux，和基于商业开发的Red Hat Enterprise Linux、SUSE、Oracle Linux等。目前市面上较知名的发行版有：Ubuntu、RedHat、C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LINUX基础及DOCKER">
+<meta property="og:url" content="https://sre-night.github.io/2025/04/27/linux%E5%9F%BA%E7%A1%80%E5%8F%8Adocker/index.html">
+<meta property="og:site_name" content="Sre.Night&#39;s blog">
+<meta property="og:description" content="LINUX基础及DOCKER一、Linux基础Linux是一个免费的、开源的类 UNIX 操作系统，在 1991 由林纳斯·托瓦兹在赫尔辛基大学上学时创立。Linux有上百种不同的发行版，如基于社区开发的debian、archlinux，和基于商业开发的Red Hat Enterprise Linux、SUSE、Oracle Linux等。目前市面上较知名的发行版有：Ubuntu、RedHat、C">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://sre-night.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2025-04-27T05:08:10.000Z">
+<meta property="article:modified_time" content="2025-07-03T09:38:22.836Z">
+<meta property="article:author" content="Sre.Night">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sre-night.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "LINUX基础及DOCKER",
+  "url": "https://sre-night.github.io/2025/04/27/linux%E5%9F%BA%E7%A1%80%E5%8F%8Adocker/",
+  "image": "https://sre-night.github.io/img/butterfly-icon.png",
+  "datePublished": "2025-04-27T05:08:10.000Z",
+  "dateModified": "2025-07-03T09:38:22.836Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Sre.Night",
+      "url": "https://sre-night.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://sre-night.github.io/2025/04/27/linux%E5%9F%BA%E7%A1%80%E5%8F%8Adocker/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0A1A35')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F5F9FF')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'LINUX基础及DOCKER',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/loading.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/footer.css"><link rel="stylesheet" href="/css/fonts/font.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-categories-card@1.0.0/lib/categorybar.css"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/xlenco/JS-X@main/pace.js/pace.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/default_top_img.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Sre.Night's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">LINUX基础及DOCKER</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">LINUX基础及DOCKER</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-27T05:08:10.000Z" title="发表于 2025-04-27 13:08:10">2025-04-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-03T09:38:22.836Z" title="更新于 2025-07-03 17:38:22">2025-07-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/web%E5%AE%89%E5%85%A8/">web安全</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="LINUX基础及DOCKER"><a href="#LINUX基础及DOCKER" class="headerlink" title="LINUX基础及DOCKER"></a>LINUX基础及DOCKER</h1><h2 id="一、Linux基础"><a href="#一、Linux基础" class="headerlink" title="一、Linux基础"></a>一、Linux基础</h2><p>Linux是一个免费的、开源的类 UNIX 操作系统，在 1991 由林纳斯·托瓦兹在赫尔辛基大学上学时创立。Linux有上百种不同的发行版，如基于社区开发的debian、archlinux，和基于商业开发的Red Hat Enterprise Linux、SUSE、Oracle Linux等。目前市面上较知名的发行版有：Ubuntu、RedHat、CentOS、Debian、Fedora、SuSE、OpenSUSE、Arch Linux、SolusOS等。</p>
+<h3 id="1-系统目录结构"><a href="#1-系统目录结构" class="headerlink" title="1. 系统目录结构"></a>1. 系统目录结构</h3><p>在 Linux 或 Unix 操作系统中，所有的文件和目录都被组织成以一个根节点开始的倒置的树状结构。文件系统的最顶层是由根目录开始的，系统使用<code>/</code>来表示根目录。在根目录之下的既可以是目录，也可以是文件，而每一个目录中又可以包含子目录文件。进入系统后在桌面点击鼠标右键，选择<code>Open Terminal</code>打开一个命令行窗口，这个命令行窗口也叫“终端”。在终端中输入<code>ls /</code>可以看到如下的文件及目录。</p>
+<ul>
+<li><code>/bin</code>：存放着最经常使用的命令。</li>
+<li><code>/boot</code>：存放启动 Linux 时使用的一些核心文件，包括一些连接文件以及镜像文件。</li>
+<li><code>/dev</code>：存放的是 Linux 的外部设备，在 Linux 中访问设备的方式和访问文件的方式是相同的。</li>
+<li><code>/etc</code>：存放所有的系统管理所需要的配置文件和子目录。</li>
+<li><code>/home</code>：用户的主目录，在 Linux 中，每个用户都有一个自己的目录，一般该目录名是以用户的账号命名的。</li>
+<li><code>/lib</code>：存放着系统最基本的动态连接共享库，其作用类似于 Windows 里的 DLL 文件。几乎所有的应用程序都需要用到这些共享库。</li>
+<li><code>/lost+found</code>：一般情况下是空的，当系统非法关机后，这里就存放了一些文件。</li>
+<li><code>/media</code>：Linux 系统会自动识别一些设备，例如U盘、光驱等等，当识别后，Linux 会把识别的设备挂载到这个目录下。</li>
+<li><code>/mnt</code>：系统提供该目录是为了让用户临时挂载别的文件系统的。</li>
+<li><code>/opt</code>：给主机额外安装软件所摆放的目录。比如安装一个ORACLE数据库则可以放到这个目录下。默认是空的。</li>
+<li><code>/proc</code>：存储的是当前内核运行状态的一系列特殊文件，这个目录是一个虚拟的目录，它是系统内存的映射，可以通过直接访问这个目录来获取系统信息。</li>
+<li><code>/root</code>：系统管理员，也称作超级权限者的用户主目录。</li>
+<li><code>/sbin</code>：存放的是系统管理员使用的系统管理程序。</li>
+<li><code>/selinux</code>：Redhat&#x2F;CentOS 所特有的目录，Selinux 是一个安全机制，类似于 windows 的防火墙，这个目录存放selinux相关的文件。</li>
+<li><code>/srv</code>：存放一些服务启动之后需要提取的数据。</li>
+<li><code>/sys</code>：安装了 2.6 内核中新出现的一个文件系统 sysfs。该文件系统集成了针对进程信息的 proc 文件系统、针对设备的 devfs 文件系统以及针对伪终端的 devpts 文件系统的信息。</li>
+<li><code>/tmp</code>：存放一些临时文件的。</li>
+<li><code>/usr</code>：用户的很多应用程序和文件都放在这个目录下，类似于 windows 下的 program files 目录。</li>
+<li><code>/var</code>：存放着在不断扩充着的东西，习惯将那些经常被修改的目录放在这个目录下。包括各种日志文件。</li>
+<li><code>/run</code>：是一个临时文件系统，存储系统启动以来的信息。当系统重启时，这个目录下的文件应该被删掉或清除。</li>
+</ul>
+<p>在Linux文件系统中有两个特殊的目录，一个是当前所在的工作目录，也叫当前目录，可以使用一个点<code>.</code>来表示；另一个是当前目录的上一级目录，也叫父目录，可以使用两个点<code>..</code>来表示。如果一个目录或文件名以一个点<code>.</code>开始，表示这个目录或文件是一个隐藏目录或文件。</p>
+<h3 id="2-文件基本属性"><a href="#2-文件基本属性" class="headerlink" title="2. 文件基本属性"></a>2. 文件基本属性</h3><p>Linux 系统是一种典型的多用户系统，不同的用户处于不同的地位，拥有不同的权限。为了保护系统的安全性，Linux 系统对不同的用户访问同一文件（包括目录文件）的权限做了不同的规定。在 Linux 中通常使用以下两个命令来修改文件或目录的所属用户与权限：</p>
+<ul>
+<li><code>chown</code> (change owner)：修改所属用户与组。</li>
+<li><code>chmod</code> (change mode)：修改用户的权限。</li>
+</ul>
+<p>通过执行<code>ls -l</code>或者<code>ll</code>命令来显示一个文件的属性以及文件所属的用户和组。参数解释如下：</p>
+<ul>
+<li>第一列：表示文件的权限。</li>
+<li>第二列：如果是文件，表示硬链接数，如果是目录表示该目录的子目录个数。</li>
+<li>第三列：表示文件的属主。</li>
+<li>第四列：表示文件属于哪个组。</li>
+<li>第五列：表示文件的大小，如果是目录，则统一为4096。</li>
+<li>第六列：文件上一次修改的时间。</li>
+<li>第七列：文件名。</li>
+</ul>
+<p>更改文件属性的方法如下：</p>
+<ul>
+<li>更改文件属主：<code>chown [–R] 属主名 文件名</code> 或 <code>chown [-R] 属主名:属组名 文件名</code></li>
+<li>更改文件权限：<code>chmod 权限 文件名</code> 或 <code>chmod [-R] 权限 文件名</code></li>
+</ul>
+<p>文件的权限字符为<code>-rwxrwxrwx</code>，这九个权限是三个三个一组的。其中，我们可以使用数字来代表各个权限，各权限的分数对照表如下：r&#x3D;4，w&#x3D;2，x&#x3D;1。每种身份(owner&#x2F;group&#x2F;others)各自的三个权限(r&#x2F;w&#x2F;x)分数是需要累加的。</p>
+<h3 id="3-文件目录管理"><a href="#3-文件目录管理" class="headerlink" title="3. 文件目录管理"></a>3. 文件目录管理</h3><p>绝对路径：路径的写法，由根目录<code>/</code>写起，例如：<code>/usr/share/doc</code>这个目录。<br>相对路径：路径的写法，不是由<code>/</code>写起，例如由<code>/usr/share/doc</code>要到<code>/usr/share/man</code>底下时，可以写成：<code>cd ../man</code>。</p>
+<h4 id="1-目录管理"><a href="#1-目录管理" class="headerlink" title="(1) 目录管理"></a>(1) 目录管理</h4><p>常用的目录管理命令如下：</p>
+<ul>
+<li><code>chown</code>：修改文件或目录的所属用户。</li>
+<li><code>chmod</code>：修改文件或目录的权限。</li>
+<li><code>mkdir</code>：创建一个新的目录。</li>
+<li><code>rmdir</code>：删除一个空的目录。</li>
+</ul>
+<h4 id="2-文件查看"><a href="#2-文件查看" class="headerlink" title="(2) 文件查看"></a>(2) 文件查看</h4><p>常用的文件查看命令如下：</p>
+<ul>
+<li><code>ls</code>：列出目录及文件名。</li>
+<li><code>pwd</code>：显示目前的目录。</li>
+<li><code>cat</code>：由第一行开始显示文件内容。</li>
+<li><code>tac</code>：从最后一行开始显示。</li>
+<li><code>nl</code>：显示的时候，顺道输出行号。</li>
+<li><code>more</code>：一页一页的显示文件内容。</li>
+<li><code>less</code>：与<code>more</code>类似，但可以往前翻页。</li>
+<li><code>head</code>：只看头几行。</li>
+<li><code>tail</code>：只看尾巴几行。</li>
+</ul>
+<h3 id="4-文件编辑"><a href="#4-文件编辑" class="headerlink" title="4. 文件编辑"></a>4. 文件编辑</h3><p>所有的 Unix Like 系统都会内建 vi 文书编辑器，其他的文书编辑器则不一定会存在。目前使用比较多的是 vim 编辑器。Vim 是从 vi 发展出来的一个文本编辑器。代码补全、编译及错误跳转等方便编程的功能特别丰富，在程序员中被广泛使用。</p>
+<h4 id="vi-vim使用"><a href="#vi-vim使用" class="headerlink" title="vi&#x2F;vim使用"></a>vi&#x2F;vim使用</h4><p>vi&#x2F;vim共分为三种模式，分别是：命令模式（Command mode）、输入模式（Insert mode）和底线命令模式（Last line mode）。</p>
+<ul>
+<li>命令模式：使用vi&#x2F;vim打开文件时进入命令模式，此时敲击键盘，被敲击的字符不会被当成内容写入到文件里，而是被当成了命令。如果想要向文件里写入内容，则需要先进入输入模式。</li>
+<li>输入模式：按下<code>i</code>、<code>a</code>、<code>o</code>（<code>I</code>、<code>A</code>、<code>O</code>）其中的一个键则进入到输入模式，可以看到<code>INSERT</code>。在输入模式下可以直接输入想写入的内容，如果要改变输入的位置，可以使用上下左右方向键。</li>
+<li>底线命令模式：在命令行模式下按下<code>:</code>（英文冒号）进入底线命令模式。在底线命令模式下常用的命令有：保存文件并退出，则输入<code>wq</code>或者<code>x</code>；退出程序（如果程序编辑过是无法退出的）则输入<code>q</code>；保存文件则输入<code>w</code>。</li>
+</ul>
+<h3 id="5-apt包管理器"><a href="#5-apt包管理器" class="headerlink" title="5. apt包管理器"></a>5. apt包管理器</h3><p>apt（Advanced Packaging Tool）是一个在 Debian 和 Ubuntu 中的 Shell 前端软件包管理器。apt 命令提供了查找、安装、升级、删除某一个、一组甚至全部软件包的命令，而且命令简洁而又好记。apt 命令执行需要超级管理员权限(root)。</p>
+<h4 id="（1）-语法"><a href="#（1）-语法" class="headerlink" title="（1） 语法"></a>（1） 语法</h4><p><code>apt [options] [command] [package ...]</code></p>
+<p>其中，<code>options</code>是可选的，选项包括 <code>-h</code>（帮助），<code>-y</code>（当安装过程提示选择全部为”yes”），<code>-q</code>（不显示安装的过程）等等；<code>command</code>是要进行的操作；<code>package</code>是安装的包名。例如，安装vim，则执行指令<code>apt -y install vim</code>。</p>
+<h4 id="（2）-换源"><a href="#（2）-换源" class="headerlink" title="（2） 换源"></a>（2） 换源</h4><p>apt下载软件默认从国外下载，所以会非常的缓慢甚至超时，此时可以先更换apt源。源文件地址为<code>/etc/apt/sources.list</code>，为了以后可能还会用到，所以可以先备份源文件。然后编辑源文件，将文件内容全部清空，在命令模式下输入<code>51dd</code>即可将光标之后的51行全部删除掉。然后进入输入模式，将下方内容全部复制粘贴进源文件里，然后保存退出。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse</span><br></pre></td></tr></table></figure>
+
+<p>更新源（更新本地包缓存，这样的话你的系统就知道有哪些包的版本是可用的），输入<code>sudo apt update</code>。</p>
+<h3 id="6-其它常用指令"><a href="#6-其它常用指令" class="headerlink" title="6. 其它常用指令"></a>6. 其它常用指令</h3><ul>
+<li>重启：<code>reboot</code></li>
+<li>关机：<code>shutdown -h now</code></li>
+<li>查看网络接口信息：<code>ifconfig</code>（如果出现无法使用的情况，则需要先安装<code>net-tools</code>）</li>
+<li>查看端口信息：<code>netstat -antlp</code></li>
+</ul>
+<h2 id="二、Docker"><a href="#二、Docker" class="headerlink" title="二、Docker"></a>二、Docker</h2><p>Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的Linux机器或Windows机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口。Docker 有三个基本概念，Docker镜像(Images)、Docker容器(Container)、Docker仓库(Registry)。</p>
+<h3 id="（1）-安装"><a href="#（1）-安装" class="headerlink" title="（1） 安装"></a>（1） 安装</h3><p>安装 apt 依赖包，用于通过HTTPS来获取仓库：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common</span><br></pre></td></tr></table></figure>
+<p>添加 Docker 的官方 GPG 密钥：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -fsSL https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu/gpg | <span class="built_in">sudo</span> apt-key add -</span><br></pre></td></tr></table></figure>
+<p>设置稳定版仓库：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> add-apt-repository <span class="string">&quot;deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu/ <span class="subst">$(lsb_release -cs)</span> stable&quot;</span></span><br></pre></td></tr></table></figure>
+<p>更新 apt 包索引：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt-get update</span><br></pre></td></tr></table></figure>
+<p>安装最新版本的 Docker Engine-Community 和 containerd ：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt-get install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+<p>测试是否安装完成：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker --version</span><br></pre></td></tr></table></figure>
+<p>设置开机自启动：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> docker.service</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）-设置加速器"><a href="#（2）-设置加速器" class="headerlink" title="（2） 设置加速器"></a>（2） 设置加速器</h3><p>国内从 DockerHub 拉取镜像有时会遇到困难，此时可以配置镜像加速器。Docker 官方和国内很多云服务商都提供了国内加速器服务，例如：科大镜像、网易、阿里云、七牛云加速器等。编辑<code>/etc/docker/daemon.json</code>，添加以下内容：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;registry-mirrors&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="string">&quot;https://dockerhub.azk8s.cn&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;https://reg-mirror.qiniu.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;https://1rqfztnd.mirror.aliyuncs.com&quot;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>然后重载配置文件并重启docker：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl daemon-reload</span><br><span class="line"><span class="built_in">sudo</span> systemctl restart docker</span><br></pre></td></tr></table></figure>
+<p>执行<code>sudo docker info</code>可以看到加速器已经成功设置。</p>
+<h3 id="（3）-利用docker运行靶场"><a href="#（3）-利用docker运行靶场" class="headerlink" title="（3） 利用docker运行靶场"></a>（3） 利用docker运行靶场</h3><p>这里使用vulapps靶场，该靶场包含了各种应用、框架的漏洞。靶场地址：<a target="_blank" rel="noopener" href="https://github.com/Medicean/VulApps">Medicean&#x2F;VulApps</a>。</p>
+<ul>
+<li>拉取镜像：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> docker pull medicean/vulapps:c_cmseasy_1</span><br></pre></td></tr></table></figure>
+<ul>
+<li>启动环境：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> docker run -d -p 8000:80 medicean/vulapps:c_cmseasy_1</span><br></pre></td></tr></table></figure>
+<ul>
+<li>访问靶场：<br>通过浏览器访问<code>http://虚拟机ip:容器映射出来的端口/</code>，例如<code>http://192.168.186.132:8000/</code>。</li>
+</ul>
+<h3 id="（4）-其它指令介绍"><a href="#（4）-其它指令介绍" class="headerlink" title="（4） 其它指令介绍"></a>（4） 其它指令介绍</h3><ul>
+<li>查看所有本地镜像：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除镜像：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker rmi 镜像ID</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看所有容器：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker ps -a</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看正在运行的容器：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker ps</span><br></pre></td></tr></table></figure>
+<ul>
+<li>停止容器：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker stop 容器ID</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除容器：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker <span class="built_in">rm</span> 容器ID</span><br></pre></td></tr></table></figure>
+<ul>
+<li>启动停止的容器：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker start 容器<span class="built_in">id</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="三、Docker-compose"><a href="#三、Docker-compose" class="headerlink" title="三、Docker-compose"></a>三、Docker-compose</h2><p>Compose 是用于定义和运行多容器 Docker 应用程序的工具。通过 Compose，可以使用 YML 文件来配置应用程序需要的所有服务。然后，使用一个命令，就可以从 YML 文件配置中创建并启动所有服务。</p>
+<h3 id="（1）-安装-1"><a href="#（1）-安装-1" class="headerlink" title="（1） 安装"></a>（1） 安装</h3><p>通过执行下面的命令，高速安装 Docker Compose：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> curl -L https://get.daocloud.io/docker/compose/releases/download/1.25.1/docker-compose-`<span class="built_in">uname</span> -s`-`<span class="built_in">uname</span> -m` -o /usr/local/bin/docker-compose</span><br></pre></td></tr></table></figure>
+<p>将可执行权限应用于二进制文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">chmod</span> +x /usr/local/bin/docker-compose</span><br></pre></td></tr></table></figure>
+<p>创建软链：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">ln</span> -s /usr/local/bin/docker-compose /usr/bin/docker-compose</span><br></pre></td></tr></table></figure>
+<p>测试是否安装成功，出现版本信息说明成功：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> docker-compose --version</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）-利用docker-compose运行靶场"><a href="#（2）-利用docker-compose运行靶场" class="headerlink" title="（2） 利用docker-compose运行靶场"></a>（2） 利用docker-compose运行靶场</h3><p>这里使用vulhub靶场，该靶场包含了各种应用、框架的漏洞。靶场地址：<a target="_blank" rel="noopener" href="https://github.com/vulhub/vulhub">vulhub&#x2F;vulhub</a>。</p>
+<ul>
+<li>将该靶场文件下载到虚拟机里，然后进入到对应的文件夹，直到可以看到<code>docker-compose.yml</code>文件。</li>
+<li>执行以下命令拉取镜像并运行容器：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> docker-compose up -d</span><br></pre></td></tr></table></figure>
+<ul>
+<li>访问靶场：访问方式可在文件夹里的<code>README.md</code>查看。</li>
+<li>停止靶场：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> docker-compose down</span><br></pre></td></tr></table></figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://Sre-Night.github.io">Sre.Night</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://sre-night.github.io/2025/04/27/linux%E5%9F%BA%E7%A1%80%E5%8F%8Adocker/">https://sre-night.github.io/2025/04/27/linux%E5%9F%BA%E7%A1%80%E5%8F%8Adocker/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://Sre-Night.github.io" target="_blank">Sre.Night's blog</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/05/01/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/" title="线性回归"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">线性回归</div></div><div class="info-2"><div class="info-item-1">线性回归线性回归介绍线性回归线性回归(Linear regression)是利用 回归方程(函数) 对 一个或多个自变量(特征值)和因变量(目标值)之间 关系进行建模的一种分析方式。  .xbartxobetjd{zoom:150%;}    注意事项：  求解的w，都是w的零次幂，所以叫线性模型  在线性回归中，从数据中获取的规律其实就是学习权重系数w  某一个权重值w越大，说明这个权重的数据影响越大   线性回归分类 一元线性回归：y &#x3D; kx +b  目标值只与一个因变量有关系  多元线性回归：   目标值只与多个因变量有关系 线归问题求解线归API的应用预测身高 已知数据:   # 1. 导入线性回归包from sklearn.linear_model import LinearRegressiondef predict_height():    # 2. 准备数据（身高cm和体重kg）    x = [[160], [165], [172], [174],[180]]  # 二维特征数据    y = [56.3, 60.6, 65.1, 68.5, 75] ...</div></div></div></a><a class="pagination-related" href="/2025/04/19/KNN%E7%AE%97%E6%B3%95/" title="KNN算法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">KNN算法</div></div><div class="info-2"><div class="info-item-1">KNN算法KNN算法简介KNN算法思想 K-近邻算法（K Nearest Neighbor，简称KNN）。  根据你的“邻居”来推断出你的类别 如果一个样本在特征空间中的 k 个最相似的样本中的大多数属于某一个类别，则该样本也属于这个类别   样本相似性：样本都是属于一个任务数据集的。样本距离越近则越相似。   利用K近邻算法预测电影类型 .rzjfwmxyckis{zoom:80%;}    .yzfnwaxkubsf{zoom:80%;}   二维平面上点a(x1, y1)与(x2, y2)间的欧氏距离：  .jrrtofcsdqnm{zoom:80%;}   三维平面上点a(x1, y1, z1)与(x2, y2, z2)间的欧氏距离：     n维平面上点a(x11,x12, …… , x1n)与(x21, x22, …… ,x2n)间的欧氏距离：      K值的选择 K值过小：用较小邻域中的训练实例进行预测，容易受到异常点的影响，K值的减小就意味着整体模型变得复杂，容易发生过拟合  K值过小需要频繁调整决策边界以适应局部数据波动。这会显著增加模型的复杂度，使决策边界呈...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Sre.Night</div><div class="author-info-description">谁怕？一蓑烟雨任平生。</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Sre-Night"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Sre-Night" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2895487980@qq.com" target="_blank" title="Email"><i class="fas fa-envelope-open-text"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的个人博客</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#LINUX%E5%9F%BA%E7%A1%80%E5%8F%8ADOCKER"><span class="toc-number">1.</span> <span class="toc-text">LINUX基础及DOCKER</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81Linux%E5%9F%BA%E7%A1%80"><span class="toc-number">1.1.</span> <span class="toc-text">一、Linux基础</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%B3%BB%E7%BB%9F%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="toc-number">1.1.1.</span> <span class="toc-text">1. 系统目录结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%96%87%E4%BB%B6%E5%9F%BA%E6%9C%AC%E5%B1%9E%E6%80%A7"><span class="toc-number">1.1.2.</span> <span class="toc-text">2. 文件基本属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95%E7%AE%A1%E7%90%86"><span class="toc-number">1.1.3.</span> <span class="toc-text">3. 文件目录管理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E7%9B%AE%E5%BD%95%E7%AE%A1%E7%90%86"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">(1) 目录管理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E6%96%87%E4%BB%B6%E6%9F%A5%E7%9C%8B"><span class="toc-number">1.1.3.2.</span> <span class="toc-text">(2) 文件查看</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%96%87%E4%BB%B6%E7%BC%96%E8%BE%91"><span class="toc-number">1.1.4.</span> <span class="toc-text">4. 文件编辑</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#vi-vim%E4%BD%BF%E7%94%A8"><span class="toc-number">1.1.4.1.</span> <span class="toc-text">vi&#x2F;vim使用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-apt%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8"><span class="toc-number">1.1.5.</span> <span class="toc-text">5. apt包管理器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%881%EF%BC%89-%E8%AF%AD%E6%B3%95"><span class="toc-number">1.1.5.1.</span> <span class="toc-text">（1） 语法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%882%EF%BC%89-%E6%8D%A2%E6%BA%90"><span class="toc-number">1.1.5.2.</span> <span class="toc-text">（2） 换源</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E5%85%B6%E5%AE%83%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4"><span class="toc-number">1.1.6.</span> <span class="toc-text">6. 其它常用指令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Docker"><span class="toc-number">1.2.</span> <span class="toc-text">二、Docker</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%881%EF%BC%89-%E5%AE%89%E8%A3%85"><span class="toc-number">1.2.1.</span> <span class="toc-text">（1） 安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%882%EF%BC%89-%E8%AE%BE%E7%BD%AE%E5%8A%A0%E9%80%9F%E5%99%A8"><span class="toc-number">1.2.2.</span> <span class="toc-text">（2） 设置加速器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%883%EF%BC%89-%E5%88%A9%E7%94%A8docker%E8%BF%90%E8%A1%8C%E9%9D%B6%E5%9C%BA"><span class="toc-number">1.2.3.</span> <span class="toc-text">（3） 利用docker运行靶场</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%884%EF%BC%89-%E5%85%B6%E5%AE%83%E6%8C%87%E4%BB%A4%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.2.4.</span> <span class="toc-text">（4） 其它指令介绍</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81Docker-compose"><span class="toc-number">1.3.</span> <span class="toc-text">三、Docker-compose</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%881%EF%BC%89-%E5%AE%89%E8%A3%85-1"><span class="toc-number">1.3.1.</span> <span class="toc-text">（1） 安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%882%EF%BC%89-%E5%88%A9%E7%94%A8docker-compose%E8%BF%90%E8%A1%8C%E9%9D%B6%E5%9C%BA"><span class="toc-number">1.3.2.</span> <span class="toc-text">（2） 利用docker-compose运行靶场</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/23/%E5%88%A4%E6%96%AD%E5%BE%AA%E7%8E%AF/" title="循环与判断">循环与判断</a><time datetime="2025-06-23T06:52:13.000Z" title="发表于 2025-06-23 14:52:13">2025-06-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/23/%E5%8F%98%E9%87%8F%E4%BB%8B%E7%BB%8D/" title="初识python">初识python</a><time datetime="2025-06-23T06:52:13.000Z" title="发表于 2025-06-23 14:52:13">2025-06-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/09/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/" title="逻辑回归">逻辑回归</a><time datetime="2025-05-09T06:22:11.000Z" title="发表于 2025-05-09 14:22:11">2025-05-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/01/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/" title="线性回归">线性回归</a><time datetime="2025-05-01T11:25:32.000Z" title="发表于 2025-05-01 19:25:32">2025-05-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/27/linux%E5%9F%BA%E7%A1%80%E5%8F%8Adocker/" title="LINUX基础及DOCKER">LINUX基础及DOCKER</a><time datetime="2025-04-27T05:08:10.000Z" title="发表于 2025-04-27 13:08:10">2025-04-27</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div id="footer-left"><div class="footer-title"><span>Sre.Night's blog | </span><span class="footer-copyright">&copy;2025 By Sre.Night</span></div><div class="wordcount"></div><span>皆安 已经写了 41.7k 字，</span><span>好像写完一本 海明威 的 《老人与海》 了啊</span></div><div id="footer-right"><div class="footer-totop"><i class="fas fa-chevron-up" onclick="rmf.scrollToTop()"></i></div><div class="footer-info"><p>使用Hexo框架 | 基于butterfly修改</p></div></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"></div><script defer src="/js/cursor.js"></script><script defer src="/js/nav.js"></script><script defer src="/js/title.js"></script><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+    function butterfly_categories_card_injector_config(){
+      var parent_div_git = document.getElementById('recent-posts');
+      var item_html = '<style>li.categoryBar-list-item{width:32.3%;}.categoryBar-list{max-height: 380px;overflow:auto;}.categoryBar-list::-webkit-scrollbar{width:0!important}@media screen and (max-width: 650px){.categoryBar-list{max-height: 320px;}}</style><div class="recent-post-item" style="height:auto;width:100%;padding:0px;"><div id="categoryBar"><ul class="categoryBar-list"><li class="categoryBar-list-item" style="background:url(/img/category-card-bg/honghong.jpg);"> <a class="categoryBar-list-link" href="categories/大模型/">大模型</a><span class="categoryBar-list-count">4</span><span class="categoryBar-list-descr">记录学习历程</span></li><li class="categoryBar-list-item" style="background:url(/img/category-card-bg/wangquan.jpeg);"> <a class="categoryBar-list-link" href="categories/python/">python</a><span class="categoryBar-list-count">2</span><span class="categoryBar-list-descr">记录学习历程</span></li><li class="categoryBar-list-item" style="background:url(/img/category-card-bg/rongrong.jpg);"> <a class="categoryBar-list-link" href="categories/web安全/">web安全</a><span class="categoryBar-list-count">6</span><span class="categoryBar-list-descr">记录学习历程</span></li></ul></div></div>';
+      console.log('已挂载butterfly_categories_card')
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+      }
+    if( document.getElementById('recent-posts') && (location.pathname ==='/'|| '/' ==='all')){
+    butterfly_categories_card_injector_config()
+    }
+  </script><!-- hexo injector body_end end --></body></html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>初识python | Sre.Night's blog</title><meta name="author" content="Sre.Night"><meta name="copyright" content="Sre.Night"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F5F9FF"><meta name="description" content="变量介绍: 定义：程序就是用来处理数据的，而变量就是用来存储数据的  概述： ① 变量是存储数据的容器 ② 变量在程序运行过程中是可以发生改变的量 ③ 变量存储的数据是临时的   ​        变量名 &#x3D; 变量值  细节: &#x3D;号两端 建议加上 空格, 阅读性更好。 命名要符合 标识符的 规则和规范。 如果要打印某个变量的值, 直接写变量名即可, 千万不能加引号, 否则就变成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初识python">
+<meta property="og:url" content="https://sre-night.github.io/2025/06/23/%E5%8F%98%E9%87%8F%E4%BB%8B%E7%BB%8D/index.html">
+<meta property="og:site_name" content="Sre.Night&#39;s blog">
+<meta property="og:description" content="变量介绍: 定义：程序就是用来处理数据的，而变量就是用来存储数据的  概述： ① 变量是存储数据的容器 ② 变量在程序运行过程中是可以发生改变的量 ③ 变量存储的数据是临时的   ​        变量名 &#x3D; 变量值  细节: &#x3D;号两端 建议加上 空格, 阅读性更好。 命名要符合 标识符的 规则和规范。 如果要打印某个变量的值, 直接写变量名即可, 千万不能加引号, 否则就变成">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://sre-night.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2025-06-23T06:52:13.000Z">
+<meta property="article:modified_time" content="2025-06-23T07:10:40.701Z">
+<meta property="article:author" content="Sre.Night">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sre-night.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "初识python",
+  "url": "https://sre-night.github.io/2025/06/23/%E5%8F%98%E9%87%8F%E4%BB%8B%E7%BB%8D/",
+  "image": "https://sre-night.github.io/img/butterfly-icon.png",
+  "datePublished": "2025-06-23T06:52:13.000Z",
+  "dateModified": "2025-06-23T07:10:40.701Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Sre.Night",
+      "url": "https://sre-night.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://sre-night.github.io/2025/06/23/%E5%8F%98%E9%87%8F%E4%BB%8B%E7%BB%8D/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0A1A35')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F5F9FF')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '初识python',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/loading.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/footer.css"><link rel="stylesheet" href="/css/fonts/font.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-categories-card@1.0.0/lib/categorybar.css"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/xlenco/JS-X@main/pace.js/pace.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/default_top_img.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Sre.Night's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">初识python</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">初识python</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-06-23T06:52:13.000Z" title="发表于 2025-06-23 14:52:13">2025-06-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-06-23T07:10:40.701Z" title="更新于 2025-06-23 15:10:40">2025-06-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/python/">python</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">632</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>2分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="变量介绍"><a href="#变量介绍" class="headerlink" title="变量介绍:"></a>变量介绍:</h2><ul>
+<li><p>定义：<strong>程序</strong>就是用来<strong>处理数据</strong>的，而<strong>变量</strong>就是用来<strong>存储数据</strong>的</p>
+</li>
+<li><p>概述：</p>
+<p>① 变量是存储数据的容器</p>
+<p>② 变量在程序运行过程中是可以发生改变的量</p>
+<p>③ 变量存储的数据是临时的</p>
+</li>
+</ul>
+<p>​        变量名 &#x3D; 变量值</p>
+<ul>
+<li>细节:<ul>
+<li>&#x3D;号两端 建议加上 空格, 阅读性更好。</li>
+<li>命名要符合 标识符的 规则和规范。</li>
+<li>如果要打印某个变量的值, 直接写变量名即可, 千万不能加引号, 否则就变成: 打印字符串了。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">a = <span class="number">100</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(a)   <span class="comment">#输出100 </span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;a&quot;</span>) <span class="comment">#输出a</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><ul>
+<li><p>int float bool string</p>
+</li>
+<li><p>查看变量</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">num = <span class="number">100</span></span><br><span class="line">my_type = <span class="built_in">type</span>(num)</span><br><span class="line"><span class="built_in">print</span>(my_type)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="标识符和关键字"><a href="#标识符和关键字" class="headerlink" title="标识符和关键字"></a>标识符和关键字</h2><h3 id="标识符命名规则"><a href="#标识符命名规则" class="headerlink" title="标识符命名规则"></a>标识符命名规则</h3><ol>
+<li>见明知意</li>
+<li>由字母、数字、下划线组成</li>
+<li>区分大小写</li>
+<li>不能和关键字重复</li>
+</ol>
+<h3 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a>关键字</h3><ul>
+<li><p>python的关键字</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 导入包</span></span><br><span class="line"><span class="keyword">import</span> keyword</span><br><span class="line"><span class="comment">#输出</span></span><br><span class="line"><span class="built_in">print</span>(keyword.kwlist)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="命名方法"><a href="#命名方法" class="headerlink" title="命名方法"></a>命名方法</h3><ul>
+<li>小驼峰：第一个单词以小写字母开始，第二个单词的首字母大写 例如：myName</li>
+<li>大驼峰：每一个单字的首字母都采用大写字母 例如：FirstName</li>
+<li>下划线：用下划线“_”来连接所有的单词 例如：send_buf</li>
+</ul>
+<h3 id="输出"><a href="#输出" class="headerlink" title="输出"></a>输出</h3><ul>
+<li><p>print输出</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/./%E5%8F%98%E9%87%8F%E4%BB%8B%E7%BB%8D/image-20250527170646076.png" alt="image-20250527170646076"></p>
+</li>
+<li><p>格式化输出：更灵活</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">age = <span class="number">18</span></span><br><span class="line">name = <span class="string">&quot;皆安&quot;</span></span><br><span class="line">mobile = <span class="number">13945936812</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;我的名字是%s,\n 年龄是%d岁,\n 联系方式%s&quot;</span> %(name, age, mobile))</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>格式符号</th>
+<th>转化</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>%s</td>
+<td>字符串</td>
+</tr>
+<tr>
+<td>%d</td>
+<td>整型</td>
+</tr>
+<tr>
+<td>%f</td>
+<td>浮点型</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<h3 id="输入"><a href="#输入" class="headerlink" title="输入"></a>输入</h3><ul>
+<li><p>input()的小括号中放入的是，提示信息，用来在获取数据之前给用户的一个简单提示</p>
+</li>
+<li><p>input()在从键盘获取了数据以后，会存放到等号右边的变量中</p>
+</li>
+<li><p>input()会把用户输入的任何值都作为<strong>字符串</strong>来对待</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">password = <span class="built_in">input</span>(<span class="string">&quot;请输入密码：&quot;</span>)</span><br><span class="line"><span class="built_in">input</span>(<span class="string">&quot;你的密码是：%s&quot;</span> %password)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h3><h4 id="算术运算符"><a href="#算术运算符" class="headerlink" title="算术运算符"></a>算术运算符</h4><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+<li><ul>
+<li></li>
+</ul>
+</li>
+<li><ul>
+<li></li>
+</ul>
+</li>
+<li>&#x2F;</li>
+<li>&#x2F;&#x2F;：取整除返回商的整数部分 9&#x2F;&#x2F;2 输出结果 4 , 9.0&#x2F;&#x2F;2.0 输出结果 4.0</li>
+<li>%</li>
+</ul>
+<hr>
+<h4 id="赋值运算符"><a href="#赋值运算符" class="headerlink" title="赋值运算符"></a>赋值运算符</h4><ul>
+<li>&#x3D;</li>
+</ul>
+<h4 id="复合赋值运算符"><a href="#复合赋值运算符" class="headerlink" title="复合赋值运算符"></a>复合赋值运算符</h4><ul>
+<li>算数在前，赋值在后</li>
+</ul>
+<h3 id="数据类型的转化"><a href="#数据类型的转化" class="headerlink" title="数据类型的转化"></a>数据类型的转化</h3><p>取整除返回商的整数部分 9&#x2F;&#x2F;2 输出结果 4 , 9.0&#x2F;&#x2F;2.0 输出结果 4.0</p>
+<table>
+<thead>
+<tr>
+<th align="center">函数</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">int(x [,base ])</td>
+<td align="center">将x转换为一个整数</td>
+</tr>
+<tr>
+<td align="center">float(x )</td>
+<td align="center">将x转换为一个浮点数</td>
+</tr>
+<tr>
+<td align="center">str(x )</td>
+<td align="center">将对象 x 转换为字符串</td>
+</tr>
+</tbody></table>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">age = <span class="built_in">int</span>(<span class="built_in">input</span>(<span class="string">&quot;请输入年龄：&quot;</span>))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;你的年龄是：%d&quot;</span> %age)</span><br></pre></td></tr></table></figure>
+
+
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://Sre-Night.github.io">Sre.Night</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://sre-night.github.io/2025/06/23/%E5%8F%98%E9%87%8F%E4%BB%8B%E7%BB%8D/">https://sre-night.github.io/2025/06/23/%E5%8F%98%E9%87%8F%E4%BB%8B%E7%BB%8D/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://Sre-Night.github.io" target="_blank">Sre.Night's blog</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/06/23/%E5%88%A4%E6%96%AD%E5%BE%AA%E7%8E%AF/" title="循环与判断"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">循环与判断</div></div><div class="info-2"><div class="info-item-1">选择1.顺序结构2.if-单分支if 单分支格式如下:    if 判断条件:    语句体else:    语句体    执行流程:	1. 先执行判断条件, 看其是否成立.	2. 如果判断条件成立, 则执行 对应的语句体, 然后if语句执行结果.	3. 如果判断条件不成立, 则什么都不做.细节:1. 有缩进的(默认是4个空格)2. if语句只能控制它的语句体, 外界语句, if是无法控制的.3. 有: # age = eval(input(&#x27;请录入您的年龄: &#x27;))age = int(input(&#x27;请录入您的年龄: &#x27;))if age &gt;= 18:    print(&#x27;哥已成年, 可以上网了!&#x27;)print(&#x27;----- end -----&#x27;)  3.比较运算符和逻辑运算符比较运算符  概述:就是用来做 比较操作的, 也称之为: 关系运算符.无论比较表达式简单还是复杂, 其结果必定是: 布尔值, 要么True, 要么False.  分类: &gt;, =, &lt;, &lt;=, ==, !...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Sre.Night</div><div class="author-info-description">谁怕？一蓑烟雨任平生。</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Sre-Night"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Sre-Night" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2895487980@qq.com" target="_blank" title="Email"><i class="fas fa-envelope-open-text"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的个人博客</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text">变量介绍:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">数据类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E8%AF%86%E7%AC%A6%E5%92%8C%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">3.</span> <span class="toc-text">标识符和关键字</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E8%AF%86%E7%AC%A6%E5%91%BD%E5%90%8D%E8%A7%84%E5%88%99"><span class="toc-number">3.1.</span> <span class="toc-text">标识符命名规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">3.2.</span> <span class="toc-text">关键字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E5%90%8D%E6%96%B9%E6%B3%95"><span class="toc-number">3.3.</span> <span class="toc-text">命名方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA"><span class="toc-number">3.4.</span> <span class="toc-text">输出</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5"><span class="toc-number">3.5.</span> <span class="toc-text">输入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">3.6.</span> <span class="toc-text">运算符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AE%97%E6%9C%AF%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">3.6.1.</span> <span class="toc-text">算术运算符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B5%8B%E5%80%BC%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">3.6.2.</span> <span class="toc-text">赋值运算符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%8D%E5%90%88%E8%B5%8B%E5%80%BC%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">3.6.3.</span> <span class="toc-text">复合赋值运算符</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%BD%AC%E5%8C%96"><span class="toc-number">3.7.</span> <span class="toc-text">数据类型的转化</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/23/%E5%88%A4%E6%96%AD%E5%BE%AA%E7%8E%AF/" title="循环与判断">循环与判断</a><time datetime="2025-06-23T06:52:13.000Z" title="发表于 2025-06-23 14:52:13">2025-06-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/23/%E5%8F%98%E9%87%8F%E4%BB%8B%E7%BB%8D/" title="初识python">初识python</a><time datetime="2025-06-23T06:52:13.000Z" title="发表于 2025-06-23 14:52:13">2025-06-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/09/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/" title="逻辑回归">逻辑回归</a><time datetime="2025-05-09T06:22:11.000Z" title="发表于 2025-05-09 14:22:11">2025-05-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/01/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/" title="线性回归">线性回归</a><time datetime="2025-05-01T11:25:32.000Z" title="发表于 2025-05-01 19:25:32">2025-05-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/27/linux%E5%9F%BA%E7%A1%80%E5%8F%8Adocker/" title="LINUX基础及DOCKER">LINUX基础及DOCKER</a><time datetime="2025-04-27T05:08:10.000Z" title="发表于 2025-04-27 13:08:10">2025-04-27</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div id="footer-left"><div class="footer-title"><span>Sre.Night's blog | </span><span class="footer-copyright">&copy;2025 By Sre.Night</span></div><div class="wordcount"></div><span>皆安 已经写了 41.7k 字，</span><span>好像写完一本 海明威 的 《老人与海》 了啊</span></div><div id="footer-right"><div class="footer-totop"><i class="fas fa-chevron-up" onclick="rmf.scrollToTop()"></i></div><div class="footer-info"><p>使用Hexo框架 | 基于butterfly修改</p></div></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"></div><script defer src="/js/cursor.js"></script><script defer src="/js/nav.js"></script><script defer src="/js/title.js"></script><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+    function butterfly_categories_card_injector_config(){
+      var parent_div_git = document.getElementById('recent-posts');
+      var item_html = '<style>li.categoryBar-list-item{width:32.3%;}.categoryBar-list{max-height: 380px;overflow:auto;}.categoryBar-list::-webkit-scrollbar{width:0!important}@media screen and (max-width: 650px){.categoryBar-list{max-height: 320px;}}</style><div class="recent-post-item" style="height:auto;width:100%;padding:0px;"><div id="categoryBar"><ul class="categoryBar-list"><li class="categoryBar-list-item" style="background:url(/img/category-card-bg/honghong.jpg);"> <a class="categoryBar-list-link" href="categories/大模型/">大模型</a><span class="categoryBar-list-count">4</span><span class="categoryBar-list-descr">记录学习历程</span></li><li class="categoryBar-list-item" style="background:url(/img/category-card-bg/wangquan.jpeg);"> <a class="categoryBar-list-link" href="categories/python/">python</a><span class="categoryBar-list-count">2</span><span class="categoryBar-list-descr">记录学习历程</span></li><li class="categoryBar-list-item" style="background:url(/img/category-card-bg/rongrong.jpg);"> <a class="categoryBar-list-link" href="categories/web安全/">web安全</a><span class="categoryBar-list-count">6</span><span class="categoryBar-list-descr">记录学习历程</span></li></ul></div></div>';
+      console.log('已挂载butterfly_categories_card')
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+      }
+    if( document.getElementById('recent-posts') && (location.pathname ==='/'|| '/' ==='all')){
+    butterfly_categories_card_injector_config()
+    }
+  </script><!-- hexo injector body_end end --></body></html>
