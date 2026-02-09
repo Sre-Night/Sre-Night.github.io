@@ -38,3 +38,28 @@
   /* 这里改变跟随的底色 */
   background: rgb(45, 156, 35);
 }
+
+/* 全局正文基础字体大小（核心配置） */
+/* .post-content 是正文内容的核心容器类名 */
+.post-content {
+  font-size: 16px !important; /* 默认一般是 14px/15px，调大到 16px/17px 更易读 */
+  line-height: 1.8; /* 行高，配合字体大小调整，避免文字拥挤，可选 */
+}
+
+/* 可选：单独调整正文里的段落、列表、引用等子元素 */
+.post-content p {
+  font-size: 16px !important; /* 段落文字 */
+}
+.post-content li {
+  font-size: 16px !important; /* 列表项文字 */
+}
+.post-content blockquote {
+  font-size: 15px !important; /* 引用块文字，可略小于正文 */
+}
+
+/* 可选：调整移动端适配（避免手机端字体太大） */
+@media (max-width: 768px) {
+  .post-content {
+    font-size: 15px !important; /* 手机端稍小一点，适配屏幕 */
+  }
+}
